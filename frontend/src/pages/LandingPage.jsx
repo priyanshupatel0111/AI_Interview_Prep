@@ -12,7 +12,6 @@ const LandingPage = () => {
       </h1>
 
       <p className="text-gray-600 max-w-xl mb-6">
-        G 
       </p>
 
       <button
