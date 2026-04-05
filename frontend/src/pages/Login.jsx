@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { API_PATHS } from "../utils/apiPaths";
 import axios from "../utils/axiosInstance";
 
@@ -13,14 +14,16 @@ const Login = () => {
   };
 
   const handleLogin = async () => {
+    if (!form.email || !form.password) return toast.error("Please fill all fields");
     try {
       const res = await axios.post(API_PATHS.AUTH.LOGIN, form);
       localStorage.setItem("token", res.data.token);
       if (res.data.name) localStorage.setItem("userName", res.data.name);
       if (res.data.email) localStorage.setItem("userEmail", res.data.email);
+      toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (error) {
-      alert("Invalid email and password");
+      toast.error(error.response?.data?.message || "Invalid email and password");
     }
   };
 

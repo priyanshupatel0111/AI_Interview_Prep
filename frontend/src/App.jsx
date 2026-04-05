@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
+import { Toaster } from "react-hot-toast";
 
 import LandingPage from "./pages/LandingPage";
 import SignUp from "./pages/SignUp";
@@ -15,6 +16,7 @@ const AppShell = () => {
       className="min-h-screen relative overflow-hidden font-sans transition-colors duration-300"
       style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}
     >
+      <Toaster position="top-center" />
       {/* Ambient Mesh Gradients */}
       <div
         className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full blur-[120px] pointer-events-none transition-all duration-700"

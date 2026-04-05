@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { API_PATHS } from "../utils/apiPaths";
 import axiosInstance from "../utils/axiosInstance";
 import { useTheme } from "../context/ThemeContext";
@@ -143,16 +144,17 @@ const Dashboard = () => {
       const res = await axiosInstance.get(API_PATHS.SESSION.GET_ALL);
       setSessions(res.data.sessions);
     } catch (error) {
-      console.log(error.response);
+      toast.error(error.response?.data?.message || "Failed to load sessions");
     }
   };
 
   const createSession = async () => {
-    if (!role || !experience) return alert("Fill all fields");
+    if (!role || !experience) return toast.error("Fill all fields");
     try {
       await axiosInstance.post(API_PATHS.SESSION.CREATE, { role, experience, questions: [] });
+      toast.success("Session created!");
     } catch (error) {
-      console.log(error.response);
+      toast.error(error.response?.data?.message || "Failed to create session");
     }
     setRole("");
     setExperience("");
@@ -166,9 +168,9 @@ const Dashboard = () => {
     try {
       await axiosInstance.delete(`${API_PATHS.SESSION.DELETE}/${id}`);
       setSessions((prev) => prev.filter((s) => s._id !== id));
+      toast.success("Session deleted");
     } catch (error) {
-      alert("Failed to delete session");
-      console.log(error.response);
+      toast.error(error.response?.data?.message || "Failed to delete session");
     } finally {
       setDeletingId(null);
     }
@@ -178,6 +180,7 @@ const Dashboard = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userName");
     localStorage.removeItem("userEmail");
+    toast.success("Logged out successfully");
     navigate("/login");
   };
 
