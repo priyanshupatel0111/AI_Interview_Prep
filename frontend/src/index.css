@@ -1,2 +1,20 @@
-@import url("https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
+
+@theme {
+  --font-inter: "Inter", sans-serif;
+  --font-sans: "Inter", sans-serif;
+  
+  --animate-shimmer: shimmer 2s linear infinite;
+
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+}
+
+body {
+  background-color: #0A0A0A;
+  color: #E5E7EB; /* gray-200 equivalent */
+  font-family: 'Inter', sans-serif;
+}

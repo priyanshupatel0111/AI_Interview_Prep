@@ -16,6 +16,7 @@ const Login = () => {
     try {
       const res = await axios.post(API_PATHS.AUTH.LOGIN, form);
       localStorage.setItem("token", res.data.token);
+      if (res.data.name) localStorage.setItem("userName", res.data.name);
       navigate("/dashboard");
     } catch (error) {
       alert("Invalid email and password");
@@ -23,55 +24,46 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 via-white to-yellow-50 px-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
-        {/* Heading */}
-        <h2 className="text-2xl font-bold text-center mb-2">Welcome Back 👋</h2>
-        <p className="text-gray-500 text-center mb-6 text-sm">
-          Login to continue your interview preparation
-        </p>
-
-        {/* Email */}
-        <input
-          name="email"
-          type="email"
-          placeholder="Enter your email"
-          className="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
-          onChange={handleForm}
-        />
-
-        {/* Password */}
-        <input
-          name="password"
-          type="password"
-          placeholder="Enter your password"
-          className="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
-          onChange={handleForm}
-        />
-
-        {/* Button */}
-        <button
-          onClick={handleLogin}
-          className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition duration-200"
-        >
-          Login
-        </button>
-
-        {/* Divider */}
-        <div className="flex items-center my-5">
-          <div className="flex-1 h-[1px] bg-gray-200"></div>
-          <p className="px-3 text-gray-400 text-sm">OR</p>
-          <div className="flex-1 h-[1px] bg-gray-200"></div>
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        {/* Logo / Brand */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 mb-4">
+            <span className="text-white text-sm font-bold">AI</span>
+          </div>
+          <h1 className="text-lg font-semibold text-white">Welcome back</h1>
+          <p className="text-xs text-gray-500 mt-1">Sign in to your account</p>
         </div>
 
-        {/* Signup Link */}
-        <p className="text-center text-sm text-gray-600">
-          Don’t have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-orange-500 font-medium hover:underline"
+        {/* Card */}
+        <div className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-3">
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            className="w-full bg-white/5 border border-white/10 text-sm text-white rounded-lg px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500/40 placeholder-gray-600 transition"
+            onChange={handleForm}
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            className="w-full bg-white/5 border border-white/10 text-sm text-white rounded-lg px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500/40 placeholder-gray-600 transition"
+            onChange={handleForm}
+          />
+          <button
+            onClick={handleLogin}
+            className="relative w-full py-2.5 rounded-lg text-sm font-medium text-white overflow-hidden group"
           >
-            Sign Up
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-violet-600 transition-opacity group-hover:opacity-90" />
+            <span className="relative z-10">Sign in</span>
+          </button>
+        </div>
+
+        <p className="text-center text-xs text-gray-600 mt-4">
+          No account?{" "}
+          <Link to="/signup" className="text-indigo-400 hover:text-indigo-300 transition">
+            Sign up
           </Link>
         </p>
       </div>

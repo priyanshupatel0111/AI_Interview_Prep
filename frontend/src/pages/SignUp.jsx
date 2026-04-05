@@ -4,13 +4,13 @@ import { API_PATHS } from "../utils/apiPaths";
 import axios from "../utils/axiosInstance";
 
 const SignUp = () => {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
   const navigate = useNavigate();
+
+  const handleForm = (e) => {
+    let { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
 
   const handleSignup = async () => {
     try {
@@ -22,67 +22,58 @@ const SignUp = () => {
     }
   };
 
-  return   <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 via-white to-yellow-50 px-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
-        {/* Heading */}
-        <h2 className="text-2xl font-bold text-center mb-2">
-          Create Account 🚀
-        </h2>
-        <p className="text-gray-500 text-center mb-6 text-sm">
-          Start your AI-powered interview preparation
-        </p>
-
-        {/* Name */}
-        <input
-          type="text"
-          placeholder="Enter your name"
-          className="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
-
-        {/* Email */}
-        <input
-          type="email"
-          placeholder="Enter your email"
-          className="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-        />
-
-        {/* Password */}
-        <input
-          type="password"
-          placeholder="Create a password"
-          className="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
-
-        {/* Button */}
-        <button
-          onClick={handleSignup}
-          className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition duration-200"
-        >
-          Sign Up
-        </button>
-
-        {/* Divider */}
-        <div className="flex items-center my-5">
-          <div className="flex-1 h-[1px] bg-gray-200"></div>
-          <p className="px-3 text-gray-400 text-sm">OR</p>
-          <div className="flex-1 h-[1px] bg-gray-200"></div>
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        {/* Logo / Brand */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 mb-4">
+            <span className="text-white text-sm font-bold">AI</span>
+          </div>
+          <h1 className="text-lg font-semibold text-white">Create account</h1>
+          <p className="text-xs text-gray-500 mt-1">Start your interview preparation journey</p>
         </div>
 
-        {/* Login Link */}
-        <p className="text-center text-sm text-gray-600">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-orange-500 font-medium hover:underline"
+        {/* Card */}
+        <div className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-3">
+          <input
+            name="name"
+            placeholder="Full Name"
+            className="w-full bg-white/5 border border-white/10 text-sm text-white rounded-lg px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500/40 placeholder-gray-600 transition"
+            onChange={handleForm}
+          />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            className="w-full bg-white/5 border border-white/10 text-sm text-white rounded-lg px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500/40 placeholder-gray-600 transition"
+            onChange={handleForm}
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            className="w-full bg-white/5 border border-white/10 text-sm text-white rounded-lg px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500/40 placeholder-gray-600 transition"
+            onChange={handleForm}
+          />
+          <button
+            onClick={handleSignup}
+            className="relative w-full py-2.5 rounded-lg text-sm font-medium text-white overflow-hidden group"
           >
-            Login
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-violet-600 transition-opacity group-hover:opacity-90" />
+            <span className="relative z-10">Create account</span>
+          </button>
+        </div>
+
+        <p className="text-center text-xs text-gray-600 mt-4">
+          Already have an account?{" "}
+          <Link to="/login" className="text-indigo-400 hover:text-indigo-300 transition">
+            Sign in
           </Link>
         </p>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 export default SignUp;

@@ -63,40 +63,39 @@ const InterviewPrep = () => {
   }, [fetchQuestions]);
 
   return (
-    <div className="w-full min-h-screen bg-slate-50">
+    <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-6 max-w-3xl mx-auto relative z-10">
       <Toaster
         position="top-right"
-        toastOptions={{ className: "!text-sm !font-medium" }}
+        toastOptions={{ className: "!text-xs !font-medium !bg-gray-900 !text-white" }}
       />
 
-      <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* ── Header ── */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <p className="text-xs text-slate-400 font-medium tracking-wide uppercase mb-1">
-              Session ID: {id?.slice(0, 8)}
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <p className="text-[10px] text-indigo-400 font-medium uppercase tracking-wider mb-1">
+            Session · {id?.slice(0, 8)}
+          </p>
+          <h1 className="text-lg font-semibold text-white">
+            Interview Questions
+          </h1>
+          {!loading && !fetchError && (
+            <p className="text-xs text-gray-600 mt-0.5">
+              {questions.length > 0
+                ? `${questions.length} question${questions.length !== 1 ? "s" : ""}`
+                : "No questions yet"}
             </p>
-            <h1 className="text-2xl font-bold text-slate-800">
-              Interview Questions
-            </h1>
-            {!loading && !fetchError && (
-              <p className="text-sm text-slate-500 mt-0.5">
-                {questions.length > 0
-                  ? `${questions.length} question${questions.length !== 1 ? "s" : ""} ready`
-                  : "No questions yet"}
-              </p>
-            )}
-          </div>
-
-          <GenerateButton
-            onClick={generateQuestions}
-            generating={generating}
-            loading={loading}
-          />
+          )}
         </div>
 
-        {/* ── Divider ── */}
-        <div className="border-t border-slate-200 mb-8" />
+        <GenerateButton
+          onClick={generateQuestions}
+          generating={generating}
+          loading={loading}
+        />
+      </div>
+
+      {/* ── Divider ── */}
+      <div className="border-t border-white/10 mb-6" />
 
         {/* ── Content ── */}
         {loading ? (
@@ -125,7 +124,6 @@ const InterviewPrep = () => {
             </div>
           </AnimatePresence>
         )}
-      </div>
     </div>
   );
 };

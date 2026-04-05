@@ -1,21 +1,24 @@
-import { BsLightningChargeFill } from "react-icons/bs";
+import { BsStars } from "react-icons/bs";
 import { ImSpinner8 } from "react-icons/im";
 
 const GenerateButton = ({ onClick, generating, loading }) => (
   <button
     onClick={onClick}
     disabled={generating || loading}
-    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors shadow-sm"
+    className="relative inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-white/10 text-white text-sm font-medium transition-all group overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
   >
-    {generating ? (
-      <>
-        <ImSpinner8 className="animate-spin w-4 h-4" /> Generating…
-      </>
-    ) : (
-      <>
-        <BsLightningChargeFill className="w-4 h-4" /> Generate
-      </>
-    )}
+    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/10 to-violet-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    <span className="relative z-10 flex items-center gap-2 shadow-sm">
+      {generating ? (
+        <>
+          <ImSpinner8 className="animate-spin w-4 h-4 text-indigo-400" /> Generating…
+        </>
+      ) : (
+        <>
+          <BsStars className="w-4 h-4 text-indigo-400 group-hover:animate-pulse" /> Generate
+        </>
+      )}
+    </span>
   </button>
 );
 
