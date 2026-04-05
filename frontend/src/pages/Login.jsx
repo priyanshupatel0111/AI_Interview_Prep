@@ -17,6 +17,7 @@ const Login = () => {
       const res = await axios.post(API_PATHS.AUTH.LOGIN, form);
       localStorage.setItem("token", res.data.token);
       if (res.data.name) localStorage.setItem("userName", res.data.name);
+      if (res.data.email) localStorage.setItem("userEmail", res.data.email);
       navigate("/dashboard");
     } catch (error) {
       alert("Invalid email and password");

@@ -6,21 +6,11 @@ import Session from "../models/session-model.js";
 // @access  Private
 export const createSession = async (req, res) => {
   try {
-    console.log(1);
-    const { role, experience, topicsToFocus, description, questions } =
-      req.body;
-    const userId = req.user._id; // Assuming you have a middleware setting req.user
+    const { role, experience, topicsToFocus, description, questions } = req.body;
+    const userId = req.user._id;
 
-    // Create the session
-    const session = await Session.create({
-      user: userId,
-      role,
-      experience,
-      topicsToFocus,
-      description,
-    });
+    const session = await Session.create({ user: userId, role, experience, topicsToFocus, description });
 
-    // Create questions and collect their IDs
     const questionDocs = await Promise.all(
       questions.map(async (q) => {
         const question = await Question.create({
@@ -34,30 +24,13 @@ export const createSession = async (req, res) => {
       }),
     );
 
-    // Update session with question IDs
     session.questions = questionDocs;
     await session.save();
 
-    // Return the populated session
-    // const populatedSession = await Session.findById(session._id).populate(
-    //   "questions",
-    // );
-
-    // res.status(201).json({
-    //   success: true,
-    //   data: populatedSession,
-    // });
-    res.status(201).json({
-      success: true,
-      session,
-    });
+    res.status(201).json({ success: true, session });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Server Error",
-      error: error.message,
-    });
+    console.error("createSession error:", error.message);
+    res.status(500).json({ success: false, message: "Server Error", error: error.message });
   }
 };
 
@@ -66,19 +39,13 @@ export const createSession = async (req, res) => {
 // @access  Private
 export const getMySessions = async (req, res) => {
   try {
-    const userId = req.user._id;
-
-    const sessions = await Session.find({ user: userId })
+    const sessions = await Session.find({ user: req.user._id })
       .sort({ createdAt: -1 })
       .populate("questions");
 
-    res.status(200).json({
-      success: true,
-      count: sessions.length,
-      sessions,
-    });
+    res.status(200).json({ success: true, count: sessions.length, sessions });
   } catch (error) {
-    console.error(error);
+    console.error("getMySessions error:", error.message);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -93,25 +60,41 @@ export const getSessionById = async (req, res) => {
       .populate("user", "name email");
 
     if (!session) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Session not found" });
+      return res.status(404).json({ success: false, message: "Session not found" });
     }
 
-    // Check if the session belongs to the logged-in user
     if (session.user._id.toString() !== req.user._id.toString()) {
-      return res
-        .status(403)
-        .json({ success: false, message: "Not authorized" });
+      return res.status(403).json({ success: false, message: "Not authorized" });
     }
 
-    res.status(200).json({
-      success: true,
-      session,
-    });
+    res.status(200).json({ success: true, session });
   } catch (error) {
-    console.error(error);
+    console.error("getSessionById error:", error.message);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
+// @desc    Delete a session and its questions
+// @route   DELETE /api/sessions/:id
+// @access  Private
+export const deleteSession = async (req, res) => {
+  try {
+    const session = await Session.findById(req.params.id);
+
+    if (!session) {
+      return res.status(404).json({ success: false, message: "Session not found" });
+    }
+
+    if (session.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+
+    await Question.deleteMany({ session: session._id });
+    await session.deleteOne();
+
+    res.status(200).json({ success: true, message: "Session deleted" });
+  } catch (error) {
+    console.error("deleteSession error:", error.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};

@@ -66,7 +66,7 @@ const InterviewPrep = () => {
     <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-6 max-w-3xl mx-auto relative z-10">
       <Toaster
         position="top-right"
-        toastOptions={{ className: "!text-xs !font-medium !bg-gray-900 !text-white" }}
+        toastOptions={{ className: "!text-xs !font-medium" }}
       />
 
       {/* ── Header ── */}
@@ -75,11 +75,11 @@ const InterviewPrep = () => {
           <p className="text-[10px] text-indigo-400 font-medium uppercase tracking-wider mb-1">
             Session · {id?.slice(0, 8)}
           </p>
-          <h1 className="text-lg font-semibold text-white">
+          <h1 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
             Interview Questions
           </h1>
           {!loading && !fetchError && (
-            <p className="text-xs text-gray-600 mt-0.5">
+            <p className="text-xs mt-0.5" style={{ color: "var(--text-sub)" }}>
               {questions.length > 0
                 ? `${questions.length} question${questions.length !== 1 ? "s" : ""}`
                 : "No questions yet"}
@@ -95,7 +95,7 @@ const InterviewPrep = () => {
       </div>
 
       {/* ── Divider ── */}
-      <div className="border-t border-white/10 mb-6" />
+      <div className="mb-6" style={{ borderTop: "1px solid var(--border)" }} />
 
         {/* ── Content ── */}
         {loading ? (

@@ -15,44 +15,33 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 // @route   POST /api/ai/generate-questions
 // @access  Private
 export const generateInterviewQuestions = async (req, res) => {
-  console.log("hi");
   try {
-    const { sessionId } = req.body; //! read sessionId, not role/experience
+    const { sessionId } = req.body;
 
     if (!sessionId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "sessionId is required" });
+      return res.status(400).json({ success: false, message: "sessionId is required" });
     }
 
-    //? 1. fetch session → get role, experience, topicsToFocus
     const session = await Session.findById(sessionId);
     if (!session) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Session not found" });
+      return res.status(404).json({ success: false, message: "Session not found" });
     }
 
     if (session.user.toString() !== req.user._id.toString()) {
-      return res
-        .status(403)
-        .json({ success: false, message: "Not authorized" });
+      return res.status(403).json({ success: false, message: "Not authorized" });
     }
 
     const { role, experience, topicsToFocus } = session;
-    console.log("session: ", session);
 
-    //? 2. generate via Gemini
     const prompt = questionAnswerPrompt(role, experience, topicsToFocus, 10);
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
     });
-    console.log("response: ", response);
 
     const parts = response.candidates?.[0]?.content?.parts ?? [];
     const rawText = parts
-      .filter((p) => !p.thought) // gemini-2.5-flash includes thinking parts; skip them
+      .filter((p) => !p.thought)
       .map((p) => p.text ?? "")
       .join("");
 
@@ -74,7 +63,6 @@ export const generateInterviewQuestions = async (req, res) => {
 
     if (!Array.isArray(questions)) throw new Error("Response is not an array");
 
-    //! 4. save to DB — was completely missing before
     const saved = await Question.insertMany(
       questions.map((q) => ({
         session: sessionId,
@@ -85,13 +73,12 @@ export const generateInterviewQuestions = async (req, res) => {
       })),
     );
 
-    //! 5. attach IDs to session
     session.questions.push(...saved.map((q) => q._id));
     await session.save();
 
     res.status(201).json({ success: true, data: saved });
   } catch (error) {
-    console.error(error);
+    console.error("generateInterviewQuestions error:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to generate questions",
@@ -108,10 +95,7 @@ export const generateConceptExplanation = async (req, res) => {
     const { question } = req.body;
 
     if (!question) {
-      return res.status(400).json({
-        success: false,
-        message: "Question is required",
-      });
+      return res.status(400).json({ success: false, message: "Question is required" });
     }
 
     const prompt = conceptExplainPrompt(question);
@@ -123,7 +107,6 @@ export const generateConceptExplanation = async (req, res) => {
 
     let rawText = response.text;
 
-    // Clean it: Remove backticks, json markers, and any extra formatting
     const cleanedText = rawText
       .replace(/^```json\s*/, "")
       .replace(/^```\s*/, "")
@@ -131,33 +114,22 @@ export const generateConceptExplanation = async (req, res) => {
       .replace(/^json\s*/, "")
       .trim();
 
-    // Parse the cleaned JSON
     let explanation;
     try {
       explanation = JSON.parse(cleanedText);
-    } catch (parseError) {
-      // If parsing fails, try to extract JSON object from text
+    } catch {
       const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        explanation = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error("Failed to parse AI response as JSON");
-      }
+      if (jsonMatch) explanation = JSON.parse(jsonMatch[0]);
+      else throw new Error("Failed to parse AI response as JSON");
     }
 
-    // Validate the response structure
     if (!explanation.title || !explanation.explanation) {
-      throw new Error(
-        "Response missing required fields: title and explanation",
-      );
+      throw new Error("Response missing required fields: title and explanation");
     }
 
-    res.status(200).json({
-      success: true,
-      data: explanation,
-    });
+    res.status(200).json({ success: true, data: explanation });
   } catch (error) {
-    console.error(error);
+    console.error("generateConceptExplanation error:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to generate explanation",
@@ -168,15 +140,15 @@ export const generateConceptExplanation = async (req, res) => {
 
 export const getSessionById = async (req, res) => {
   try {
-    const session = await Session.findById(req.params.id).populate("questions"); // ← this was missing
+    const session = await Session.findById(req.params.id).populate("questions");
 
-    if (!session)
-      return res
-        .status(404)
-        .json({ success: false, message: "Session not found" });
+    if (!session) {
+      return res.status(404).json({ success: false, message: "Session not found" });
+    }
 
     res.status(200).json({ success: true, session });
   } catch (error) {
+    console.error("getSessionById error:", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };

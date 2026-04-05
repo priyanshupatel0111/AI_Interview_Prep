@@ -1,5 +1,5 @@
 import express from "express";
-import cors from "cors"; 
+import cors from "cors";
 import userRoutes from "./routes/auth-route.js";
 import sessionRoutes from "./routes/session-route.js";
 import aiRoutes from "./routes/ai-route.js";
@@ -7,26 +7,40 @@ import conectDB from "./config/database-config.js";
 
 conectDB();
 
-// 2) call/invoke the function
-let app = express(); // object = {listen}
+const app = express();
+
+// ── CORS ──────────────────────────────────────────────────────────────────────
+// In production, ALLOWED_ORIGIN is set in the hosting dashboard (e.g. Render).
+// In development it falls back to localhost.
+const allowedOrigins = (process.env.ALLOWED_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim());
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
-  }),
+    origin: (origin, callback) => {
+      // Allow requests with no origin (curl, Postman, mobile apps)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS: origin '${origin}' not allowed`));
+    },
+    credentials: true,
+  })
 );
 
-app.use(express.urlencoded({ extended: true }));// this 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use("/api/auth", userRoutes); 
+// ── Routes ───────────────────────────────────────────────────────────────────
+app.use("/api/auth", userRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/ai", aiRoutes);
 
+// ── Health check (useful for Render free tier) ────────────────────────────────
+app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
-app.listen(9001, () => {
-  console.log("Server Started.....");
+// ── Start ─────────────────────────────────────────────────────────────────────
+const PORT = process.env.PORT || 9001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-
-
